@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Meta 200 · AiMA Awards</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Poppins,Arial,sans-serif;background:#1E1035;color:#fff;min-height:100vh;
+ background:radial-gradient(ellipse 120% 60% at 50% 0%,#3B2163 0%,#1E1035 60%,#12091F 100%) fixed}
+.w{max-width:520px;margin:0 auto;padding:22px 16px 120px}
+.top{text-align:center;margin-bottom:18px}
+.k{font-size:11px;letter-spacing:4px;font-weight:700;color:#D9B972}
+h1{font-size:40px;font-weight:800;line-height:1.05;margin-top:4px}
+h1 span{color:#E7C982}
+.sub{font-size:15px;opacity:.9;margin-top:6px}
+.card{background:rgba(255,255,255,.06);border:1px solid rgba(217,185,114,.35);border-radius:18px;padding:16px;margin-top:14px}
+label{display:block;font-size:12px;letter-spacing:1.5px;font-weight:700;color:#D9B972;margin-bottom:6px}
+input,textarea{width:100%;font-size:16px;padding:12px 12px;border-radius:12px;border:1px solid rgba(255,255,255,.18);background:rgba(0,0,0,.25);color:#fff;outline:none}
+input:focus,textarea:focus{border-color:#D9B972}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.4)}
+.row{display:grid;grid-template-columns:1fr 1fr 34px;gap:8px;margin-bottom:8px;align-items:center}
+.x{width:34px;height:34px;border-radius:50%;border:none;background:rgba(255,255,255,.1);color:#fff;font-size:18px}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.b2{padding:12px;border-radius:12px;border:1px solid rgba(217,185,114,.6);background:transparent;color:#E7C982;font-weight:700;font-size:14px}
+.b2.full{grid-column:1/3}
+.hint{font-size:12.5px;opacity:.7;margin-top:8px;line-height:1.4}
+.send{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(180deg,rgba(18,9,31,0),#12091F 35%)}
+.send button{display:block;width:100%;max-width:520px;margin:0 auto;padding:17px;border:none;border-radius:16px;font-size:18px;font-weight:800;color:#2A1448;
+ background:linear-gradient(120deg,#B8914A,#F6E3AC 45%,#C9A45C);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.send button:disabled{opacity:.45}
+#pegar{display:none;margin-top:10px}
+.ok{display:none;text-align:center;padding:40px 10px}
+.ok .n{font-size:96px;font-weight:800;color:#E7C982;line-height:1}
+.ok p{font-size:18px;margin-top:8px}
+.ok button{margin-top:22px}
+.err{color:#ffb4b4;font-size:13px;margin-top:8px;display:none}
+.cnt{font-size:13px;opacity:.75;text-align:right;margin-top:4px}
+</style></head><body>
+<div class="w" id="app">
+  <div class="top">
+    <div class="k">AiMA AWARDS 2026</div>
+    <h1>META <span>200</span></h1>
+    <div class="sub">¿Quién debería estar en AIMA? Sumá todos los que quieras de una vez.</div>
+  </div>
+  <div class="card">
+    <label>TU NOMBRE</label>
+    <input id="yo" placeholder="Ej: Ana Gómez" autocomplete="name">
+  </div>
+  <div class="card">
+    <label>TUS REFERIDOS (NOMBRE Y WHATSAPP)</label>
+    <button id="bcont" type="button" style="display:none;width:100%;padding:15px;margin-bottom:12px;border:none;border-radius:14px;font-size:16px;font-weight:800;color:#2A1448;background:linear-gradient(120deg,#B8914A,#F6E3AC 45%,#C9A45C)">📇 Elegir varios de mis contactos</button>
+    <div id="lista"></div>
+    <div class="cnt" id="cnt"></div>
+    <div class="btns">
+      <button class="b2" id="mas" type="button">＋ Agregar otro</button>
+      <button class="b2" id="bpegar" type="button">📋 Pegar varios</button>
+      
+    </div>
+    <div id="pegar">
+      <textarea id="txt" rows="6" placeholder="Uno por línea, por ejemplo:&#10;Juan Pérez 0981 123 456&#10;María López +595 982 654 321"></textarea>
+      <button class="b2 full" id="bproc" type="button" style="margin-top:8px;width:100%">Agregar a la lista</button>
+    </div>
+    <div class="hint" id="tip">Tocá el nombre de cada fila y elegí “Autorrellenar contacto” del teclado, o escribí nombre y número.</div>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+<div class="ok" id="ok"><div class="k">¡GRACIAS!</div><div class="n" id="okn">0</div><p id="okt">referidos sumados a la Meta 200</p><p style="font-size:14px;opacity:.75">Mirá la pantalla: ¡ya están contando!</p><button class="b2" id="otra" type="button" style="padding:14px 24px">Sumar más</button></div>
+<div class="send" id="sendbar"><button id="enviar" type="button" disabled>Sumar referidos</button></div>
+<script>
+var FORM='https://docs.google.com/forms/d/e/1FAIpQLSdrPeofF_FSd_DJjOpWcbOWBg6KlIG6eUCO7A-aE5UUbpUESw/formResponse';
+var E_YO='entry.859494325', E_REF='entry.856878624', E_WA='entry.1130418485';
+var $=function(id){return document.getElementById(id)};
+try{ $('yo').value=localStorage.getItem('m200_yo')||''; }catch(e){}
+function fila(n,t){
+  var d=document.createElement('div'); d.className='row';
+  var a=document.createElement('input'); a.placeholder='Nombre'; a.value=n||''; a.className='nom'; a.autocomplete='name'; a.name='nombre'+Math.random().toString(36).slice(2,6);
+  var b=document.createElement('input'); b.placeholder='WhatsApp'; b.type='tel'; b.inputMode='tel'; b.value=t||''; b.className='tel'; b.autocomplete='tel';
+  var x=document.createElement('button'); x.className='x'; x.type='button'; x.textContent='×';
+  x.onclick=function(){d.remove(); if(!document.querySelectorAll('.row').length) fila(); upd();};
+  a.oninput=b.oninput=upd;
+  d.appendChild(a); d.appendChild(b); d.appendChild(x); $('lista').appendChild(d); return d;
+}
+function filas(){var out=[];document.querySelectorAll('.row').forEach(function(r){var n=r.querySelector('.nom').value.trim(),t=r.querySelector('.tel').value.trim();if(n||t)out.push({n:n,t:t,r:r});});return out;}
+function validos(){return filas().filter(function(f){return f.n.length>=2 && f.t.replace(/\D/g,'').length>=6;});}
+function upd(){var v=validos().length; $('enviar').disabled=!v||!$('yo').value.trim(); $('enviar').textContent=v?('Sumar '+v+' referido'+(v>1?'s':'')):'Sumar referidos'; $('cnt').textContent=v?(v+' listo'+(v>1?'s':'')+' para sumar'):'';}
+$('yo').oninput=function(){try{localStorage.setItem('m200_yo',this.value)}catch(e){} upd();};
+function limpiarVacias(){document.querySelectorAll('.row').forEach(function(r){if(!r.querySelector('.nom').value.trim()&&!r.querySelector('.tel').value.trim())r.remove();});}
+$('mas').onclick=function(){fila().querySelector('.nom').focus();};
+$('bpegar').onclick=function(){$('pegar').style.display=$('pegar').style.display==='block'?'none':'block'; if($('pegar').style.display==='block')$('txt').focus();};
+$('bproc').onclick=function(){
+  var ls=$('txt').value.split(/\n|;/), k=0; limpiarVacias();
+  ls.forEach(function(l){ l=l.trim(); if(!l) return;
+    var m=l.match(/(\+?\d[\d\s\-().]{5,}\d)/); var tel=m?m[1].trim():''; var nom=(m?l.replace(m[1],''):l).replace(/[,:\-–|]+/g,' ').replace(/\s+/g,' ').trim();
+    if(nom||tel){fila(nom,tel);k++;} });
+  $('txt').value=''; $('pegar').style.display='none'; if(!document.querySelectorAll('.row').length) fila(); upd();
+};
+if('contacts' in navigator && 'select' in navigator.contacts){
+  $('bcont').style.display='block'; $('tip').textContent='Tocá “Elegir varios de mis contactos”, marcá todos los que quieras y listo.';
+  $('bcont').onclick=function(){ navigator.contacts.select(['name','tel'],{multiple:true}).then(function(cs){ limpiarVacias();
+    cs.forEach(function(c){ fila((c.name&&c.name[0])||'', (c.tel&&c.tel[0])||''); }); if(!document.querySelectorAll('.row').length) fila(); upd(); }).catch(function(){}); };
+}
+$('enviar').onclick=function(){
+  var yo=$('yo').value.trim(), vs=validos(); if(!yo||!vs.length) return;
+  $('enviar').disabled=true; var hechos=0, i=0;
+  function sig(){
+    if(i>=vs.length){ fin(); return; }
+    var f=vs[i++]; var body=new URLSearchParams(); body.append(E_YO,yo); body.append(E_REF,f.n); body.append(E_WA,f.t);
+    $('enviar').textContent='Enviando '+i+' de '+vs.length+'…';
+    fetch(FORM,{method:'POST',mode:'no-cors',body:body}).then(function(){hechos++; f.r.remove();}).catch(function(){}).then(function(){setTimeout(sig,250);});
+  }
+  function fin(){
+    if(!hechos){ $('err').style.display='block'; $('err').textContent='No se pudo enviar. Revisá tu conexión y probá de nuevo.'; upd(); return; }
+    $('app').style.display='none'; $('sendbar').style.display='none'; $('ok').style.display='block';
+    $('okn').textContent=hechos; $('okt').textContent=(hechos>1?'referidos sumados':'referido sumado')+' a la Meta 200';
+    if(!document.querySelectorAll('.row').length) fila();
+  }
+  sig();
+};
+$('otra').onclick=function(){ $('ok').style.display='none'; $('app').style.display='block'; $('sendbar').style.display='block'; if(!document.querySelectorAll('.row').length){fila();fila();fila();} upd(); window.scrollTo(0,0); };
+fila(); fila(); fila(); upd();
+</script>
+</body></html>
