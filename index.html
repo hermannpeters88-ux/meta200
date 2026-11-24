@@ -46,26 +46,20 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,.4)}
     <input id="yo" placeholder="Ej: Ana Gómez" autocomplete="name">
   </div>
   <div class="card">
-    <label>OPCIÓN B · INVITAR POR WHATSAPP</label>
-    <button id="bwa" type="button" style="width:100%;padding:15px;border:none;border-radius:14px;font-size:16px;font-weight:800;color:#fff;background:#25D366">💬 Invitar por WhatsApp</button>
-    <div class="hint">Se abre WhatsApp con el mensaje listo: elegí varios chats o grupos. Cada invitado se anota solo con el link y suma a tu nombre.</div>
-  </div>
-  <div class="card">
-    <label>OPCIÓN A · CARGALOS VOS (NOMBRE Y WHATSAPP)</label>
+    <label>TUS REFERIDOS (NOMBRE Y WHATSAPP)</label>
     <div class="hint" id="tipios" style="margin:0 0 10px;opacity:.9">📱 iPhone: tocá <b>“Nombre”</b> → arriba del teclado <b>“Autorrellenar contacto”</b> → <b>“Otro contacto…”</b> y elegilo de tu agenda.</div>
     <button id="bcont" type="button" style="display:none;width:100%;padding:15px;margin-bottom:12px;border:none;border-radius:14px;font-size:16px;font-weight:800;color:#2A1448;background:linear-gradient(120deg,#B8914A,#F6E3AC 45%,#C9A45C)">📇 Elegir varios de mis contactos</button>
     <div id="lista"></div>
     <div class="cnt" id="cnt"></div>
     <div class="btns">
-      <button class="b2" id="mas" type="button">＋ Agregar otro</button>
-      <button class="b2" id="bpegar" type="button">📋 Pegar varios</button>
+      <button class="b2 full" id="mas" type="button" style="padding:15px;font-size:16px">＋ Agregar otro referido</button>
       
     </div>
     <div id="pegar">
       <textarea id="txt" rows="6" placeholder="Uno por línea, por ejemplo:&#10;Juan Pérez 0981 123 456&#10;María López +595 982 654 321"></textarea>
       <button class="b2 full" id="bproc" type="button" style="margin-top:8px;width:100%">Agregar a la lista</button>
     </div>
-    <div class="hint" id="tip">También podés escribir nombre y número, o usar “Pegar varios”.</div>
+    <div class="hint" id="tip">También podés escribirlos a mano. ¿Tenés una lista? <a href="#" id="bpegar" style="color:#E7C982">Pegala acá</a>.</div>
     <div class="err" id="err"></div>
   </div>
 </div>
@@ -106,7 +100,7 @@ function upd(){var v=validos().length; $('enviar').disabled=!v||!$('yo').value.t
 $('yo').oninput=function(){try{localStorage.setItem('m200_yo',this.value)}catch(e){} upd();};
 function limpiarVacias(){document.querySelectorAll('.row').forEach(function(r){if(!r.querySelector('.nom').value.trim()&&!r.querySelector('.tel').value.trim())r.remove();});}
 $('mas').onclick=function(){fila().querySelector('.nom').focus();};
-$('bpegar').onclick=function(){$('pegar').style.display=$('pegar').style.display==='block'?'none':'block'; if($('pegar').style.display==='block')$('txt').focus();};
+$('bpegar').onclick=function(ev){ if(ev) ev.preventDefault();$('pegar').style.display=$('pegar').style.display==='block'?'none':'block'; if($('pegar').style.display==='block')$('txt').focus();};
 $('bproc').onclick=function(){
   var ls=$('txt').value.split(/\n|;/), k=0; limpiarVacias();
   ls.forEach(function(l){ l=l.trim(); if(!l) return;
@@ -140,7 +134,7 @@ $('otra').onclick=function(){ $('ok').style.display='none'; $('app').style.displ
 fila(); fila(); fila(); upd();
 var E_EMP='entry.1084262222';
 var BASE=location.origin+location.pathname;
-$('bwa').onclick=function(){
+if($('bwa')) $('bwa').onclick=function(){
   var yo=$('yo').value.trim();
   if(!yo){ $('yo').focus(); $('yo').style.borderColor='#ffb4b4'; $('yo').placeholder='Primero escribí tu nombre'; return; }
   var link=BASE+'?ref='+encodeURIComponent(yo);
