@@ -46,7 +46,13 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,.4)}
     <input id="yo" placeholder="Ej: Ana Gómez" autocomplete="name">
   </div>
   <div class="card">
-    <label>TUS REFERIDOS (NOMBRE Y WHATSAPP)</label>
+    <label>OPCIÓN B · INVITAR POR WHATSAPP</label>
+    <button id="bwa" type="button" style="width:100%;padding:15px;border:none;border-radius:14px;font-size:16px;font-weight:800;color:#fff;background:#25D366">💬 Invitar por WhatsApp</button>
+    <div class="hint">Se abre WhatsApp con el mensaje listo: elegí varios chats o grupos. Cada invitado se anota solo con el link y suma a tu nombre.</div>
+  </div>
+  <div class="card">
+    <label>OPCIÓN A · CARGALOS VOS (NOMBRE Y WHATSAPP)</label>
+    <div class="hint" id="tipios" style="margin:0 0 10px;opacity:.9">📱 iPhone: tocá <b>“Nombre”</b> → arriba del teclado <b>“Autorrellenar contacto”</b> → <b>“Otro contacto…”</b> y elegilo de tu agenda.</div>
     <button id="bcont" type="button" style="display:none;width:100%;padding:15px;margin-bottom:12px;border:none;border-radius:14px;font-size:16px;font-weight:800;color:#2A1448;background:linear-gradient(120deg,#B8914A,#F6E3AC 45%,#C9A45C)">📇 Elegir varios de mis contactos</button>
     <div id="lista"></div>
     <div class="cnt" id="cnt"></div>
@@ -59,11 +65,26 @@ input::placeholder,textarea::placeholder{color:rgba(255,255,255,.4)}
       <textarea id="txt" rows="6" placeholder="Uno por línea, por ejemplo:&#10;Juan Pérez 0981 123 456&#10;María López +595 982 654 321"></textarea>
       <button class="b2 full" id="bproc" type="button" style="margin-top:8px;width:100%">Agregar a la lista</button>
     </div>
-    <div class="hint" id="tip">Tocá el nombre de cada fila y elegí “Autorrellenar contacto” del teclado, o escribí nombre y número.</div>
+    <div class="hint" id="tip">También podés escribir nombre y número, o usar “Pegar varios”.</div>
     <div class="err" id="err"></div>
   </div>
 </div>
 <div class="ok" id="ok"><div class="k">¡GRACIAS!</div><div class="n" id="okn">0</div><p id="okt">referidos sumados a la Meta 200</p><p style="font-size:14px;opacity:.75">Mirá la pantalla: ¡ya están contando!</p><button class="b2" id="otra" type="button" style="padding:14px 24px">Sumar más</button></div>
+<div class="w" id="inv" style="display:none">
+  <div class="top">
+    <div class="k">AiMA AWARDS 2026</div>
+    <h1 style="font-size:32px"><span id="quien">Un miembro</span> te invita a <span>AIMA</span></h1>
+    <div class="sub">Una comunidad de empresarios, profesionales y emprendedores que aprenden y crecen juntos. Dejá tus datos y te contactamos.</div>
+  </div>
+  <div class="card">
+    <label>TU NOMBRE Y APELLIDO</label><input id="in_nom" autocomplete="name" placeholder="Nombre y apellido">
+    <label style="margin-top:12px">TU WHATSAPP</label><input id="in_tel" type="tel" inputmode="tel" autocomplete="tel" placeholder="09xx xxx xxx">
+    <label style="margin-top:12px">EMPRESA / RUBRO (OPCIONAL)</label><input id="in_emp" autocomplete="organization" placeholder="Ej: Constructora · Arquitectura">
+    <div class="err" id="in_err"></div>
+  </div>
+  <div style="margin-top:16px"><button id="in_env" type="button" style="display:block;width:100%;padding:17px;border:none;border-radius:16px;font-size:18px;font-weight:800;color:#2A1448;background:linear-gradient(120deg,#B8914A,#F6E3AC 45%,#C9A45C)">Quiero conocer AIMA</button></div>
+</div>
+<div class="ok" id="inok"><div class="k">¡LISTO!</div><div class="n" style="font-size:64px">🙌</div><p>Gracias. Alguien de AIMA te va a escribir pronto.</p></div>
 <div class="send" id="sendbar"><button id="enviar" type="button" disabled>Sumar referidos</button></div>
 <script>
 var FORM='https://docs.google.com/forms/d/e/1FAIpQLSdrPeofF_FSd_DJjOpWcbOWBg6KlIG6eUCO7A-aE5UUbpUESw/formResponse';
@@ -94,7 +115,7 @@ $('bproc').onclick=function(){
   $('txt').value=''; $('pegar').style.display='none'; if(!document.querySelectorAll('.row').length) fila(); upd();
 };
 if('contacts' in navigator && 'select' in navigator.contacts){
-  $('bcont').style.display='block'; $('tip').textContent='Tocá “Elegir varios de mis contactos”, marcá todos los que quieras y listo.';
+  $('bcont').style.display='block'; $('tipios').style.display='none'; $('tip').textContent='Tocá “Elegir varios de mis contactos”, marcá todos los que quieras y listo.';
   $('bcont').onclick=function(){ navigator.contacts.select(['name','tel'],{multiple:true}).then(function(cs){ limpiarVacias();
     cs.forEach(function(c){ fila((c.name&&c.name[0])||'', (c.tel&&c.tel[0])||''); }); if(!document.querySelectorAll('.row').length) fila(); upd(); }).catch(function(){}); };
 }
@@ -117,5 +138,27 @@ $('enviar').onclick=function(){
 };
 $('otra').onclick=function(){ $('ok').style.display='none'; $('app').style.display='block'; $('sendbar').style.display='block'; if(!document.querySelectorAll('.row').length){fila();fila();fila();} upd(); window.scrollTo(0,0); };
 fila(); fila(); fila(); upd();
+var E_EMP='entry.1084262222';
+var BASE=location.origin+location.pathname;
+$('bwa').onclick=function(){
+  var yo=$('yo').value.trim();
+  if(!yo){ $('yo').focus(); $('yo').style.borderColor='#ffb4b4'; $('yo').placeholder='Primero escribí tu nombre'; return; }
+  var link=BASE+'?ref='+encodeURIComponent(yo);
+  var msg='¡Hola! Te quiero invitar a conocer AIMA, una comunidad de empresarios y profesionales que aprenden y crecen juntos. Si te interesa, dejá tus datos acá y te contactan 👉 '+link;
+  location.href='https://wa.me/?text='+encodeURIComponent(msg);
+};
+var ref=new URLSearchParams(location.search).get('ref');
+if(ref){
+  $('app').style.display='none'; $('sendbar').style.display='none'; $('inv').style.display='block';
+  $('quien').textContent=ref.slice(0,40);
+  $('in_env').onclick=function(){
+    var n=$('in_nom').value.trim(), t=$('in_tel').value.trim(), e=$('in_emp').value.trim();
+    if(n.length<2||t.replace(/\D/g,'').length<6){ $('in_err').style.display='block'; $('in_err').textContent='Completá tu nombre y tu WhatsApp.'; return; }
+    $('in_env').disabled=true; $('in_env').textContent='Enviando…';
+    var body=new URLSearchParams(); body.append(E_YO,ref); body.append(E_REF,n); body.append(E_WA,t); if(e) body.append(E_EMP,e);
+    fetch(FORM,{method:'POST',mode:'no-cors',body:body}).then(function(){ $('inv').style.display='none'; $('inok').style.display='block'; })
+      .catch(function(){ $('in_env').disabled=false; $('in_env').textContent='Quiero conocer AIMA'; $('in_err').style.display='block'; $('in_err').textContent='No se pudo enviar, probá de nuevo.'; });
+  };
+}
 </script>
 </body></html>
